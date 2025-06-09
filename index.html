@@ -1,42 +1,43 @@
-<!DOCTYPE html>
-<html lang="ur" dir="rtl">
+<!DOCTYPE html><html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تصاویر سے PDF بنائیں</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Easy PDF Tools – Convert images to PDF professionally" />
+  <title>Easy PDF Tools</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    <div class="container">
-        <h1>📄 تصاویر کو PDF میں تبدیل کریں</h1>
-        
-        <!-- ڈارک/لائٹ موڈ سوئچ -->
-        <button id="themeToggle">🌙 ڈارک موڈ</button>
-        
-        <!-- Drag & Drop اپلوڈ ایریا -->
-        <div class="upload-area" id="dropArea">
-            <p>📌 تصاویر یہاں ڈراپ کریں یا فائل منتخب کریں</p>
-            <input type="file" id="imageInput" accept="image/*" multiple>
-        </div>
-        
-        <!-- تصاویر کی پریویو -->
-        <div class="preview" id="imagePreview"></div>
-        
-        <!-- کنٹرولز -->
-        <div class="controls">
-            <button onclick="clearAll()">❌ صاف کریں</button>
-            <button onclick="convertToPDF()">🖨 PDF بنائیں</button>
-        </div>
-        
-        <!-- ترتیب تبدیل کرنے کے لیے (Drag & Drop) -->
-        <p class="hint">ℹ تصاویر کو ترتیب دینے کے لیے کھینچیں (Drag & Drop)</p>
-        
-        <!-- اسٹیٹس میسج -->
-        <p id="status"></p>
-    </div>
-    
-    <script src="script.js"></script>
-</body>
+  <header>
+    <h1>Easy PDF Tools</h1>
+    <button id="modeToggle">🌙 Dark Mode</button>
+  </header>  <main>
+    <div id="dropZone">Drag & Drop or Click to Upload Images</div>
+    <input type="file" id="fileInput" accept="image/*" multiple hidden /><div id="imagePanel"></div>
+
+<div id="controls" style="display:none;">
+  <button id="cropBtn">Crop</button>
+  <button id="rotateBtn">Rotate</button>
+  <label>Size:
+    <input type="range" id="sizeRange" min="100" max="1000" />
+  </label>
+  <label>Brightness:
+    <input type="range" id="brightnessRange" min="0" max="200" />
+  </label>
+  <label>Contrast:
+    <input type="range" id="contrastRange" min="0" max="200" />
+  </label>
+  <button id="reorderBtn">Reorder Images</button>
+  <button id="previewBtn">Preview PDF</button>
+  <button id="generatePDF">Download PDF</button>
+  <button id="resetBtn">Reset</button>
+</div>
+
+<section id="previewSection" style="display:none;">
+  <h2>PDF Preview</h2>
+  <iframe id="pdfPreview" width="100%" height="500px"></iframe>
+</section>
+
+  </main>  <footer>
+    <p>&copy; 2025 Easy PDF Tools. All rights reserved.</p>
+  </footer>  <script src="libs/pdf-lib.min.js"></script>  <script src="libs/cropper.min.js"></script>  <script src="script.js"></script></body>
 </html>
