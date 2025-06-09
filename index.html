@@ -1,42 +1,749 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Easy PDF Tools – Convert images to PDF professionally" />
-  <title>Easy PDF Tools</title>
-  <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Image to PDF Converter</title>
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --dark-color: #1a1a2e;
+            --light-color: #f8f9fa;
+            --success-color: #4cc9f0;
+            --warning-color: #f8961e;
+            --danger-color: #f94144;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode {
+            background-color: var(--dark-color);
+            color: var(--light-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .theme-toggle {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-secondary {
+            background-color: #e9ecef;
+            color: var(--dark-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #dee2e6;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #d90429;
+        }
+
+        .drop-zone {
+            border: 3px dashed var(--primary-color);
+            border-radius: 10px;
+            padding: 3rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            background-color: rgba(67, 97, 238, 0.05);
+            cursor: pointer;
+        }
+
+        .drop-zone.active {
+            background-color: rgba(67, 97, 238, 0.2);
+            border-color: var(--success-color);
+        }
+
+        .drop-zone p {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .preview-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .preview-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            background-color: white;
+        }
+
+        .preview-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .preview-item.dark-mode {
+            background-color: #16213e;
+        }
+
+        .preview-img {
+            width: 100%;
+            height: 200px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .preview-controls {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .control-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .control-btn:hover {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .settings-panel {
+            background-color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .settings-panel.dark-mode {
+            background-color: #16213e;
+        }
+
+        .settings-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .setting-group {
+            margin-bottom: 1rem;
+        }
+
+        .setting-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .setting-input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+        }
+
+        .setting-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .setting-range {
+            width: 100%;
+        }
+
+        .status-message {
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .status-success {
+            background-color: rgba(76, 201, 240, 0.2);
+            color: var(--success-color);
+        }
+
+        .status-error {
+            background-color: rgba(249, 65, 68, 0.2);
+            color: var(--danger-color);
+        }
+
+        .status-warning {
+            background-color: rgba(248, 150, 30, 0.2);
+            color: var(--warning-color);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .toolbar {
+                flex-direction: column;
+            }
+            
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>Easy PDF Tools</h1>
-    <button id="modeToggle">🌙</button>
-  </header>
+    <div class="container">
+        <header>
+            <h1>Ultimate Image to PDF Converter</h1>
+            <button class="theme-toggle" id="themeToggle">
+                <span id="themeIcon">🌙</span> Dark Mode
+            </button>
+        </header>
 
-  <main>
-    <div id="dropZone">Drag & Drop or Click to Upload Images</div>
-    <input type="file" id="fileInput" accept="image/*" multiple hidden />
+        <div class="toolbar">
+            <button class="btn btn-primary" id="addFilesBtn">
+                <span>📁</span> Add Images
+            </button>
+            <button class="btn btn-secondary" id="takePhotoBtn">
+                <span>📷</span> Take Photo
+            </button>
+            <button class="btn btn-primary" id="convertBtn">
+                <span>🖨</span> Convert to PDF
+            </button>
+            <button class="btn btn-danger" id="clearAllBtn">
+                <span>🗑</span> Clear All
+            </button>
+        </div>
 
-    <div id="imagePanel"></div>
+        <div class="drop-zone" id="dropZone">
+            <p>Drag & drop your images here</p>
+            <p>or</p>
+            <button class="btn btn-primary" id="selectFilesBtn">
+                Select Files
+            </button>
+            <input type="file" id="fileInput" class="file-input" accept="image/*" multiple>
+        </div>
 
-    <div id="controls" style="display:none;">
-      <button id="cropBtn">Crop</button>
-      <button id="rotateBtn">Rotate</button>
-      <label>Size:
-        <input type="range" id="sizeRange" min="100" max="1000" />
-      </label>
-      <label>Brightness:
-        <input type="range" id="brightnessRange" min="0" max="200" />
-      </label>
-      <label>Contrast:
-        <input type="range" id="contrastRange" min="0" max="200" />
-      </label>
-      <button id="generatePDF">Download PDF</button>
+        <div id="statusMessage" class="status-message" style="display: none;"></div>
+
+        <div class="settings-panel" id="settingsPanel">
+            <h3 class="settings-title">PDF Settings</h3>
+            <div class="settings-grid">
+                <div class="setting-group">
+                    <label class="setting-label">Page Size</label>
+                    <select class="setting-input" id="pageSize">
+                        <option value="a4">A4 (210 × 297 mm)</option>
+                        <option value="letter">Letter (8.5 × 11 in)</option>
+                        <option value="a5">A5 (148 × 210 mm)</option>
+                        <option value="legal">Legal (8.5 × 14 in)</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+
+                <div class="setting-group" id="customSizeGroup" style="display: none;">
+                    <label class="setting-label">Custom Size (mm)</label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="number" class="setting-input" id="customWidth" placeholder="Width" min="50" max="500">
+                        <input type="number" class="setting-input" id="customHeight" placeholder="Height" min="50" max="500">
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <label class="setting-label">Orientation</label>
+                    <select class="setting-input" id="pageOrientation">
+                        <option value="portrait">Portrait</option>
+                        <option value="landscape">Landscape</option>
+                    </select>
+                </div>
+
+                <div class="setting-group">
+                    <label class="setting-label">Margin (mm)</label>
+                    <input type="range" class="setting-range" id="pageMargin" min="0" max="30" value="10">
+                    <span id="marginValue">10 mm</span>
+                </div>
+
+                <div class="setting-group">
+                    <label class="setting-label">Image Quality</label>
+                    <input type="range" class="setting-range" id="imageQuality" min="10" max="100" value="80">
+                    <span id="qualityValue">80%</span>
+                </div>
+
+                <div class="setting-group">
+                    <label class="setting-label">PDF Filename</label>
+                    <input type="text" class="setting-input" id="pdfFilename" value="converted_images">
+                </div>
+            </div>
+
+            <div class="setting-group" style="margin-top: 1rem;">
+                <label class="setting-label">
+                    <input type="checkbox" id="addWatermark"> Add Watermark
+                </label>
+                <div id="watermarkSettings" style="margin-top: 0.5rem; display: none;">
+                    <input type="text" class="setting-input" id="watermarkText" placeholder="Watermark text" style="margin-bottom: 0.5rem;">
+                    <input type="color" id="watermarkColor" value="#000000">
+                    <label> Color</label>
+                    <input type="range" class="setting-range" id="watermarkOpacity" min="10" max="100" value="30" style="margin-top: 0.5rem;">
+                    <span id="opacityValue">30%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="preview-container" id="previewContainer"></div>
     </div>
-  </main>
 
-  <script src="libs/pdf-lib.min.js"></script>
-  <script src="libs/cropper.min.js"></script>
-  <script src="script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script>
+        // Global variables
+        let images = [];
+        let currentTheme = 'light';
+        const { jsPDF } = window.jspdf;
+
+        // DOM elements
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const addFilesBtn = document.getElementById('addFilesBtn');
+        const takePhotoBtn = document.getElementById('takePhotoBtn');
+        const convertBtn = document.getElementById('convertBtn');
+        const clearAllBtn = document.getElementById('clearAllBtn');
+        const dropZone = document.getElementById('dropZone');
+        const selectFilesBtn = document.getElementById('selectFilesBtn');
+        const fileInput = document.getElementById('fileInput');
+        const statusMessage = document.getElementById('statusMessage');
+        const previewContainer = document.getElementById('previewContainer');
+        const pageSizeSelect = document.getElementById('pageSize');
+        const customSizeGroup = document.getElementById('customSizeGroup');
+        const pageOrientationSelect = document.getElementById('pageOrientation');
+        const pageMarginRange = document.getElementById('pageMargin');
+        const marginValue = document.getElementById('marginValue');
+        const imageQualityRange = document.getElementById('imageQuality');
+        const qualityValue = document.getElementById('qualityValue');
+        const pdfFilenameInput = document.getElementById('pdfFilename');
+        const addWatermarkCheckbox = document.getElementById('addWatermark');
+        const watermarkSettings = document.getElementById('watermarkSettings');
+        const watermarkTextInput = document.getElementById('watermarkText');
+        const watermarkColorInput = document.getElementById('watermarkColor');
+        const watermarkOpacityRange = document.getElementById('watermarkOpacity');
+        const opacityValue = document.getElementById('opacityValue');
+
+        // Event listeners
+        themeToggle.addEventListener('click', toggleTheme);
+        addFilesBtn.addEventListener('click', () => fileInput.click());
+        takePhotoBtn.addEventListener('click', takePhoto);
+        convertBtn.addEventListener('click', convertToPDF);
+        clearAllBtn.addEventListener('click', clearAll);
+        selectFilesBtn.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', handleFileSelect);
+        
+        // Drag and drop events
+        dropZone.addEventListener('dragover', handleDragOver);
+        dropZone.addEventListener('dragleave', handleDragLeave);
+        dropZone.addEventListener('drop', handleDrop);
+        
+        // Settings change events
+        pageSizeSelect.addEventListener('change', handlePageSizeChange);
+        pageMarginRange.addEventListener('input', updateMarginValue);
+        imageQualityRange.addEventListener('input', updateQualityValue);
+        addWatermarkCheckbox.addEventListener('change', toggleWatermarkSettings);
+        watermarkOpacityRange.addEventListener('input', updateOpacityValue);
+
+        // Initialize
+        updateMarginValue();
+        updateQualityValue();
+        updateOpacityValue();
+
+        // Functions
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            document.querySelectorAll('.preview-item').forEach(item => {
+                item.classList.toggle('dark-mode');
+            });
+            document.getElementById('settingsPanel').classList.toggle('dark-mode');
+            
+            if (currentTheme === 'light') {
+                currentTheme = 'dark';
+                themeIcon.textContent = '☀';
+                themeToggle.innerHTML = '<span id="themeIcon">☀</span> Light Mode';
+            } else {
+                currentTheme = 'light';
+                themeIcon.textContent = '🌙';
+                themeToggle.innerHTML = '<span id="themeIcon">🌙</span> Dark Mode';
+            }
+        }
+
+        function handleFileSelect(e) {
+            const files = e.target.files;
+            if (files.length > 0) {
+                processFiles(files);
+            }
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            dropZone.classList.add('active');
+        }
+
+        function handleDragLeave() {
+            dropZone.classList.remove('active');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            dropZone.classList.remove('active');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                processFiles(files);
+            }
+        }
+
+        function processFiles(files) {
+            const imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
+            
+            if (imageFiles.length === 0) {
+                showStatus('No valid image files found', 'error');
+                return;
+            }
+            
+            if (imageFiles.length > 20) {
+                showStatus('Maximum 20 images allowed', 'warning');
+                imageFiles = imageFiles.slice(0, 20);
+            }
+            
+            imageFiles.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    images.push({
+                        id: Date.now() + Math.random().toString(36).substr(2, 9),
+                        file: file,
+                        dataUrl: e.target.result,
+                        element: null
+                    });
+                    
+                    if (images.length === imageFiles.length) {
+                        updatePreview();
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+            
+            showStatus(${imageFiles.length} image(s) added, 'success');
+        }
+
+        function updatePreview() {
+            previewContainer.innerHTML = '';
+            
+            images.forEach((image, index) => {
+                const previewItem = document.createElement('div');
+                previewItem.className = preview-item ${currentTheme === 'dark' ? 'dark-mode' : ''};
+                previewItem.dataset.id = image.id;
+                
+                const img = document.createElement('img');
+                img.className = 'preview-img';
+                img.src = image.dataUrl;
+                img.alt = Image ${index + 1};
+                
+                const controls = document.createElement('div');
+                controls.className = 'preview-controls';
+                
+                const rotateBtn = document.createElement('button');
+                rotateBtn.className = 'control-btn';
+                rotateBtn.innerHTML = '🔄';
+                rotateBtn.title = 'Rotate';
+                rotateBtn.addEventListener('click', () => rotateImage(image.id, 90));
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'control-btn';
+                deleteBtn.innerHTML = '❌';
+                deleteBtn.title = 'Delete';
+                deleteBtn.addEventListener('click', () => removeImage(image.id));
+                
+                controls.appendChild(rotateBtn);
+                controls.appendChild(deleteBtn);
+                
+                previewItem.appendChild(img);
+                previewItem.appendChild(controls);
+                
+                previewContainer.appendChild(previewItem);
+                image.element = previewItem;
+            });
+        }
+
+        function rotateImage(id, degrees) {
+            const imageIndex = images.findIndex(img => img.id === id);
+            if (imageIndex === -1) return;
+            
+            const imgElement = images[imageIndex].element.querySelector('img');
+            const currentRotation = parseInt(imgElement.style.transform.replace('rotate(', '').replace('deg)', '')) || 0;
+            const newRotation = currentRotation + degrees;
+            
+            imgElement.style.transform = rotate(${newRotation}deg);
+            images[imageIndex].rotation = newRotation;
+        }
+
+        function removeImage(id) {
+            images = images.filter(img => img.id !== id);
+            updatePreview();
+        }
+
+        function clearAll() {
+            images = [];
+            previewContainer.innerHTML = '';
+            fileInput.value = '';
+            showStatus('All images cleared', 'success');
+        }
+
+        function takePhoto() {
+            showStatus('Camera access not implemented in this demo', 'warning');
+            // In a real implementation, you would use:
+            // navigator.mediaDevices.getUserMedia({ video: true })
+            // to access the camera
+        }
+
+        function handlePageSizeChange() {
+            if (pageSizeSelect.value === 'custom') {
+                customSizeGroup.style.display = 'block';
+            } else {
+                customSizeGroup.style.display = 'none';
+            }
+        }
+
+        function updateMarginValue() {
+            marginValue.textContent = ${pageMarginRange.value} mm;
+        }
+
+        function updateQualityValue() {
+            qualityValue.textContent = ${imageQualityRange.value}%;
+        }
+
+        function toggleWatermarkSettings() {
+            watermarkSettings.style.display = addWatermarkCheckbox.checked ? 'block' : 'none';
+        }
+
+        function updateOpacityValue() {
+            opacityValue.textContent = ${watermarkOpacityRange.value}%;
+        }
+
+        function showStatus(message, type) {
+            statusMessage.textContent = message;
+            statusMessage.className = status-message status-${type};
+            statusMessage.style.display = 'block';
+            
+            setTimeout(() => {
+                statusMessage.style.display = 'none';
+            }, 3000);
+        }
+
+        async function convertToPDF() {
+            if (images.length === 0) {
+                showStatus('No images to convert', 'error');
+                return;
+            }
+            
+            showStatus('Creating PDF...', 'success');
+            
+            try {
+                // Get PDF settings
+                const margin = parseInt(pageMarginRange.value);
+                const quality = parseInt(imageQualityRange.value) / 100;
+                const filename = pdfFilenameInput.value || 'converted_images';
+                const addWatermark = addWatermarkCheckbox.checked;
+                const watermarkText = watermarkTextInput.value || 'Confidential';
+                const watermarkColor = watermarkColorInput.value;
+                const watermarkOpacity = parseInt(watermarkOpacityRange.value) / 100;
+                
+                // Get page size
+                let pageWidth, pageHeight;
+                switch (pageSizeSelect.value) {
+                    case 'a4':
+                        pageWidth = 210;
+                        pageHeight = 297;
+                        break;
+                    case 'letter':
+                        pageWidth = 215.9;
+                        pageHeight = 279.4;
+                        break;
+                    case 'a5':
+                        pageWidth = 148;
+                        pageHeight = 210;
+                        break;
+                    case 'legal':
+                        pageWidth = 215.9;
+                        pageHeight = 355.6;
+                        break;
+                    case 'custom':
+                        pageWidth = parseInt(document.getElementById('customWidth').value) || 210;
+                        pageHeight = parseInt(document.getElementById('customHeight').value) || 297;
+                        break;
+                    default:
+                        pageWidth = 210;
+                        pageHeight = 297;
+                }
+                
+                if (pageOrientationSelect.value === 'landscape') {
+                    [pageWidth, pageHeight] = [pageHeight, pageWidth];
+                }
+                
+                // Create PDF
+                const pdf = new jsPDF({
+                    orientation: pageOrientationSelect.value,
+                    unit: 'mm',
+                    format: [pageWidth, pageHeight]
+                });
+                
+                // Add images to PDF
+                for (let i = 0; i < images.length; i++) {
+                    if (i > 0) {
+                        pdf.addPage([pageWidth, pageHeight], pageOrientationSelect.value);
+                    }
+                    
+                    const img = images[i];
+                    const imgElement = img.element.querySelector('img');
+                    
+                    // Calculate image dimensions to fit page with margins
+                    const maxWidth = pageWidth - (margin * 2);
+                    const maxHeight = pageHeight - (margin * 2);
+                    
+                    let imgWidth, imgHeight;
+                    const imgAspectRatio = imgElement.naturalWidth / imgElement.naturalHeight;
+                    const pageAspectRatio = maxWidth / maxHeight;
+                    
+                    if (imgAspectRatio > pageAspectRatio) {
+                        imgWidth = maxWidth;
+                        imgHeight = maxWidth / imgAspectRatio;
+                    } else {
+                        imgHeight = maxHeight;
+                        imgWidth = maxHeight * imgAspectRatio;
+                    }
+                    
+                    // Center the image on the page
+                    const x = margin + (maxWidth - imgWidth) / 2;
+                    const y = margin + (maxHeight - imgHeight) / 2;
+                    
+                    // Add image to PDF
+                    pdf.addImage(img.dataUrl, 'JPEG', x, y, imgWidth, imgHeight, image${i}, 'FAST', 0);
+                    
+                    // Add watermark if enabled
+                    if (addWatermark) {
+                        const watermarkOptions = {
+                            color: watermarkColor,
+                            opacity: watermarkOpacity,
+                            rotation: -45,
+                            text: watermarkText,
+                            x: pageWidth / 2,
+                            y: pageHeight / 2,
+                            fontSize: 24
+                        };
+                        
+                        // This is a simplified watermark - in a real app you might use a more sophisticated approach
+                        pdf.setTextColor(watermarkOptions.color);
+                        pdf.setGState(new pdf.GState({opacity: watermarkOptions.opacity}));
+                        pdf.setFontSize(watermarkOptions.fontSize);
+                        pdf.text(watermarkOptions.text, watermarkOptions.x, watermarkOptions.y, {
+                            angle: watermarkOptions.rotation,
+                            align: 'center',
+                            baseline: 'middle'
+                        });
+                    }
+                }
+                
+                // Save PDF
+                pdf.save(${filename}.pdf);
+                showStatus('PDF downloaded successfully!', 'success');
+            } catch (error) {
+                console.error('Error creating PDF:', error);
+                showStatus('Error creating PDF: ' + error.message, 'error');
+            }
+        }
+    </script>
 </body>
 </html>
