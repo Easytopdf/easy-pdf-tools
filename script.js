@@ -1,76 +1,69 @@
-document.addEventListener('DOMContentLoaded', function () {
-  const dropZone = document.getElementById('dropZone');
-  const fileInput = document.getElementById('fileInput');
-  const imagePanel = document.getElementById('imagePanel');
-  const controls = document.getElementById('controls');
-  const modeToggle = document.getElementById('modeToggle');
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f2f2f2;
+  color: #333;
+}
 
-  let imageFiles = [];
+header {
+  background-color: #007bff;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+  position: relative;
+}
 
-  dropZone.addEventListener('click', () => fileInput.click());
+#modeToggle {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
 
-  dropZone.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    dropZone.style.borderColor = '#0056b3';
-  });
+#dropZone {
+  border: 2px dashed #007bff;
+  padding: 2rem;
+  text-align: center;
+  margin: 2rem;
+  background-color: white;
+  cursor: pointer;
+}
 
-  dropZone.addEventListener('dragleave', () => {
-    dropZone.style.borderColor = '#007bff';
-  });
+#imagePanel {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin: 1rem;
+}
 
-  dropZone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    handleFiles(e.dataTransfer.files);
-  });
+#imagePanel img {
+  max-width: 150px;
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  background: white;
+}
 
-  fileInput.addEventListener('change', () => handleFiles(fileInput.files));
+#controls {
+  text-align: center;
+  margin: 2rem;
+}
 
-  function handleFiles(files) {
-    controls.style.display = 'block';
-    imagePanel.innerHTML = '';
-    imageFiles = Array.from(files);
+#controls label {
+  display: block;
+  margin: 1rem 0;
+}
 
-    imageFiles.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        const img = document.createElement('img');
-        img.src = e.target.result;
-        imagePanel.appendChild(img);
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-
-  document.getElementById('generatePDF').addEventListener('click', async () => {
-    const { PDFDocument } = window.pdfLib;
-    const pdfDoc = await PDFDocument.create();
-
-    for (let file of imageFiles) {
-      const imageBytes = await file.arrayBuffer();
-      let imgEmbed;
-      if (file.type === 'image/jpeg') {
-        imgEmbed = await pdfDoc.embedJpg(imageBytes);
-      } else {
-        imgEmbed = await pdfDoc.embedPng(imageBytes);
-      }
-      const page = pdfDoc.addPage([imgEmbed.width, imgEmbed.height]);
-      page.drawImage(imgEmbed, {
-        x: 0,
-        y: 0,
-        width: imgEmbed.width,
-        height: imgEmbed.height,
-      });
-    }
-
-    const pdfBytes = await pdfDoc.save();
-    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'converted.pdf';
-    link.click();
-  });
-
-  modeToggle.addEventListener('click', () => {
-    document.body.classList.toggle('dark-mode');
-  });
-});
+#controls button {
+  margin: 1rem 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
