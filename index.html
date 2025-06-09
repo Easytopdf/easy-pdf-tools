@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,35 +10,32 @@
 <body>
   <header>
     <h1>Easy PDF Tools</h1>
-    <button id="modeToggle">🌙 Dark Mode</button>
-  </header>  <main>
+    <button id="modeToggle">🌙</button>
+  </header>
+
+  <main>
     <div id="dropZone">Drag & Drop or Click to Upload Images</div>
-    <input type="file" id="fileInput" accept="image/*" multiple hidden /><div id="imagePanel"></div>
+    <input type="file" id="fileInput" accept="image/*" multiple hidden />
 
-<div id="controls" style="display:none;">
-  <button id="cropBtn">Crop</button>
-  <button id="rotateBtn">Rotate</button>
-  <label>Size:
-    <input type="range" id="sizeRange" min="100" max="1000" />
-  </label>
-  <label>Brightness:
-    <input type="range" id="brightnessRange" min="0" max="200" />
-  </label>
-  <label>Contrast:
-    <input type="range" id="contrastRange" min="0" max="200" />
-  </label>
-  <button id="reorderBtn">Reorder Images</button>
-  <button id="previewBtn">Preview PDF</button>
-  <button id="generatePDF">Download PDF</button>
-  <button id="resetBtn">Reset</button>
-</div>
+    <div id="imagePanel"></div>
 
-<section id="previewSection" style="display:none;">
-  <h2>PDF Preview</h2>
-  <iframe id="pdfPreview" width="100%" height="500px"></iframe>
-</section>
+    <div id="controls" style="display:none;">
+      <button id="cropBtn">Crop</button>
+      <button id="rotateBtn">Rotate</button>
+      <label>Size:
+        <input type="range" id="sizeRange" min="100" max="1000" />
+      </label>
+      <label>Brightness:
+        <input type="range" id="brightnessRange" min="0" max="200" />
+      </label>
+      <label>Contrast:
+        <input type="range" id="contrastRange" min="0" max="200" />
+      </label>
+      <button id="generatePDF">Download PDF</button>
+    </div>
+  </main>
 
-  </main>  <footer>
-    <p>&copy; 2025 Easy PDF Tools. All rights reserved.</p>
-  </footer>  <script src="libs/pdf-lib.min.js"></script>  <script src="libs/cropper.min.js"></script>  <script src="script.js"></script></body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+  <script src="script.js"></script>
+</body>
 </html>
