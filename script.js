@@ -1,17 +1,76 @@
-const dropZone = document.getElementById('dropZone'); const fileInput = document.getElementById('fileInput'); const imagePanel = document.getElementById('imagePanel'); const generatePDF = document.getElementById('generatePDF'); const cropBtn = document.getElementById('cropBtn'); const rotateBtn = document.getElementById('rotateBtn'); const sizeRange = document.getElementById('sizeRange'); const brightnessRange = document.getElementById('brightnessRange'); const contrastRange = document.getElementById('contrastRange'); const controls = document.getElementById('controls'); const modeToggle = document.getElementById('modeToggle');
+document.addEventListener('DOMContentLoaded', function () {
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  const imagePanel = document.getElementById('imagePanel');
+  const controls = document.getElementById('controls');
+  const modeToggle = document.getElementById('modeToggle');
 
-let images = [];
+  let imageFiles = [];
 
-modeToggle.addEventListener('click', () => { document.body.classList.toggle('dark-mode'); });
+  dropZone.addEventListener('click', () => fileInput.click());
 
-dropZone.addEventListener('click', () => fileInput.click()); dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.style.borderColor = 'green'; }); dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = '#ccc'; }); dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.style.borderColor = '#ccc'; handleFiles(e.dataTransfer.files); });
+  dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.style.borderColor = '#0056b3';
+  });
 
-fileInput.addEventListener('change', () => handleFiles(fileInput.files));
+  dropZone.addEventListener('dragleave', () => {
+    dropZone.style.borderColor = '#007bff';
+  });
 
-function handleFiles(files) { for (let file of files) { const reader = new FileReader(); reader.onload = (e) => { const img = document.createElement('img'); img.src = e.target.result; imagePanel.appendChild(img); images.push(e.target.result); }; reader.readAsDataURL(file); } controls.style.display = 'block'; }
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    handleFiles(e.dataTransfer.files);
+  });
 
-generatePDF.addEventListener('click', async () => { const { PDFDocument, rgb } = PDFLib; const pdfDoc = await PDFDocument.create();
+  fileInput.addEventListener('change', () => handleFiles(fileInput.files));
 
-for (let image of images) { const imgBytes = await fetch(image).then(res => res.arrayBuffer()); let pdfImage; if (image.startsWith('data:image/jpeg')) { pdfImage = await pdfDoc.embedJpg(imgBytes); } else { pdfImage = await pdfDoc.embedPng(imgBytes); } const page = pdfDoc.addPage([pdfImage.width, pdfImage.height]); page.drawImage(pdfImage, { x: 0, y: 0, width: pdfImage.width, height: pdfImage.height, }); }
+  function handleFiles(files) {
+    controls.style.display = 'block';
+    imagePanel.innerHTML = '';
+    imageFiles = Array.from(files);
 
-const pdfBytes = await pdfDoc.save(); const blob = new Blob([pdfBytes], { type: 'application/pdf' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'converted.pdf'; link.click(); });
+    imageFiles.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        imagePanel.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  document.getElementById('generatePDF').addEventListener('click', async () => {
+    const { PDFDocument } = window.pdfLib;
+    const pdfDoc = await PDFDocument.create();
+
+    for (let file of imageFiles) {
+      const imageBytes = await file.arrayBuffer();
+      let imgEmbed;
+      if (file.type === 'image/jpeg') {
+        imgEmbed = await pdfDoc.embedJpg(imageBytes);
+      } else {
+        imgEmbed = await pdfDoc.embedPng(imageBytes);
+      }
+      const page = pdfDoc.addPage([imgEmbed.width, imgEmbed.height]);
+      page.drawImage(imgEmbed, {
+        x: 0,
+        y: 0,
+        width: imgEmbed.width,
+        height: imgEmbed.height,
+      });
+    }
+
+    const pdfBytes = await pdfDoc.save();
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'converted.pdf';
+    link.click();
+  });
+
+  modeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+  });
+});
