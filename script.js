@@ -1,69 +1,71 @@
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f2f2f2;
-  color: #333;
+const dropZone = document.getElementById("dropZone");
+const fileInput = document.getElementById("fileInput");
+const imagePanel = document.getElementById("imagePanel");
+const controls = document.getElementById("controls");
+const generatePDFBtn = document.getElementById("generatePDF");
+
+let images = [];
+
+dropZone.addEventListener("click", () => fileInput.click());
+
+fileInput.addEventListener("change", (e) => {
+  handleFiles(e.target.files);
+});
+
+dropZone.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  dropZone.style.background = "#e0e0e0";
+});
+
+dropZone.addEventListener("dragleave", () => {
+  dropZone.style.background = "white";
+});
+
+dropZone.addEventListener("drop", (e) => {
+  e.preventDefault();
+  dropZone.style.background = "white";
+  handleFiles(e.dataTransfer.files);
+});
+
+function handleFiles(files) {
+  images = [];
+  imagePanel.innerHTML = "";
+  for (let file of files) {
+    if (!file.type.startsWith("image/")) continue;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = document.createElement("img");
+      img.src = reader.result;
+      imagePanel.appendChild(img);
+      images.push(reader.result);
+    };
+    reader.readAsDataURL(file);
+  }
+  controls.style.display = "block";
 }
 
-header {
-  background-color: #007bff;
-  color: white;
-  padding: 1rem;
-  text-align: center;
-  position: relative;
-}
+generatePDFBtn.addEventListener("click", async () => {
+  if (images.length === 0) return alert("Upload images first!");
 
-#modeToggle {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: none;
-  border: none;
-  color: white;
-  font-size: 1.2rem;
-  cursor: pointer;
-}
+  const { PDFDocument } = PDFLib;
+  const pdfDoc = await PDFDocument.create();
 
-#dropZone {
-  border: 2px dashed #007bff;
-  padding: 2rem;
-  text-align: center;
-  margin: 2rem;
-  background-color: white;
-  cursor: pointer;
-}
+  for (let imgData of images) {
+    const img = await fetch(imgData).then((res) => res.arrayBuffer());
+    const image = await pdfDoc.embedJpg(img); // You can check format
+    const page = pdfDoc.addPage([image.width, image.height]);
+    page.drawImage(image, {
+      x: 0,
+      y: 0,
+      width: image.width,
+      height: image.height,
+    });
+  }
 
-#imagePanel {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1rem;
-  margin: 1rem;
-}
-
-#imagePanel img {
-  max-width: 150px;
-  border: 1px solid #ccc;
-  padding: 0.5rem;
-  background: white;
-}
-
-#controls {
-  text-align: center;
-  margin: 2rem;
-}
-
-#controls label {
-  display: block;
-  margin: 1rem 0;
-}
-
-#controls button {
-  margin: 1rem 0.5rem;
-  padding: 0.5rem 1rem;
-  background-color: #007bff;
-  border: none;
-  color: white;
-  cursor: pointer;
-}
+  const pdfBytes = await pdfDoc.save();
+  const blob = new Blob([pdfBytes], { type: "application/pdf" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "converted.pdf";
+  link.click();
+});
